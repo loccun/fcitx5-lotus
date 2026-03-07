@@ -33,7 +33,7 @@ std::condition_variable monitor_cv;
 
 FCITX_DEFINE_LOG_CATEGORY(lotus, "lotus", fcitx::LogLevel::NoLog);
 
-std::string             buildSocketPath(const char* base_path_suffix) {
+std::string buildSocketPath(const char* base_path_suffix) {
     const char* username_c = std::getenv("USER");
     std::string path;
     path.reserve(32);
