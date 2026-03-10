@@ -306,7 +306,11 @@ namespace fcitx {
         state->waitAck_ = false;
         if (*config_.fixUinputWithAck) {
             if (targetMode == LotusMode::Uinput || targetMode == LotusMode::UinputHC || targetMode == LotusMode::Smooth) {
+#if __cplusplus >= 202002L
                 std::ranges::transform(appName, appName.begin(), ::tolower);
+#else
+                std::transform(appName.begin(), appName.end(), appName.begin(), ::tolower);
+#endif
                 for (const auto& ackApp : ack_apps) {
                     if (appName.find(ackApp) != std::string::npos) {
                         state->waitAck_ = true;
