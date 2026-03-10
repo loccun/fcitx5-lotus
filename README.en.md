@@ -508,16 +508,17 @@ Add this line to file `~/.config/kanata/kanata.kbd`
 
 In any application, press the **`** key (or the hotkey you have configured above) to open the typing mode selection menu, where you can use the mouse or shortcuts to select.
 
-| Mode                  | Shortcut | Description                                                                                                                                         |
-| :-------------------- | :------: | :-------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Uinput (Smooth)**   |  **1**   | Default mode, fast response.<br>**Optimal:** applications with high input processing speed.                                                         |
-| **Uinput (Slow)**     |  **2**   | Similar to Uinput (Smooth) but with a slower key-sending speed.<br>**Optimal:** applications with low input processing speed _(e.g., LibreOffice)_. |
-| **Uinput (Hardcore)** |  **3**   | A variant of Uinput (Smooth).<br>**Optimal:** Windows applications via Wine.                                                                        |
-| **Surrounding Text**  |  **4**   | Allows editing marks on typed text, works smoothly. <br> **Optimal:** Qt/GTK applications.                                                          |
-| **Preedit**           |  **Q**   | Displays underline while typing. <br> **Optimal:** most applications.                                                                               |
-| **Emoji Picker**      |  **W**   | Search and input Emojis (EmojiOne source, fuzzy search supported).                                                                                  |
-| **OFF**               |  **E**   | Turn off input method.                                                                                                                              |
-| **Default Typing**    |  **R**   | Default typing mode configured in the _Typing mode_ option.                                                                                         |
+| Mode                  |   Shortcut    | Description                                                                                                                                         |
+| :-------------------- | :-----------: | :-------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Uinput (Smooth)**   |     **1**     | Default mode, fast response.<br>**Optimal:** applications with high input processing speed.                                                         |
+| **Uinput (Slow)**     |     **2**     | Similar to Uinput (Smooth) but with a slower key-sending speed.<br>**Optimal:** applications with low input processing speed _(e.g., LibreOffice)_. |
+| **Uinput (Hardcore)** |     **3**     | A variant of Uinput (Smooth).<br>**Optimal:** Windows applications via Wine.                                                                        |
+| **Surrounding Text**  |     **4**     | Allows editing marks on typed text, works smoothly. <br> **Optimal:** Qt/GTK applications.                                                          |
+| **Preedit**           |     **Q**     | Displays underline while typing. <br> **Optimal:** most applications.                                                                               |
+| **Emoji Picker**      |     **W**     | Search and input Emojis (EmojiOne source, fuzzy search supported).                                                                                  |
+| **OFF**               |     **E**     | Turn off input method.                                                                                                                              |
+| **Default Typing**    |     **R**     | Default typing mode configured in the _Typing mode_ option.                                                                                         |
+| **Type X**            | **X** / **F** | Type the key X (if the key to turn on the menu is configured in Fcitx5 configuration is a single key, e.g. X).                                      |
 
 The input method automatically saves the most recently used typing mode for each application and restores that configuration when you reopen them.
 

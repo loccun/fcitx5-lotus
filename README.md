@@ -514,16 +514,17 @@ Thêm dòng sau vào file `~/.config/kanata/kanata.kbd`
 
 Khi con trỏ đang ở trong ô nhập liệu (có thể gõ văn bản), nhấn phím `` ` `` (hoặc phím tắt bạn đã tuỳ chỉnh ở trên) để mở menu chọn chế độ gõ; bạn có thể dùng chuột hoặc phím tắt để chọn chế độ mong muốn.
 
-| Chế độ                | Phím tắt | Mô tả                                                                                                                                |
-| :-------------------- | :------: | :----------------------------------------------------------------------------------------------------------------------------------- |
-| **Uinput (Smooth)**   |  **1**   | Chế độ mặc định, phản hồi nhanh.<br>**Tối ưu:** ứng dụng có tốc độ xử lý input cao.                                                  |
-| **Uinput (Slow)**     |  **2**   | Tương tự Uinput (Smooth) nhưng tốc độ gửi phím chậm hơn.<br>**Tối ưu:** ứng dụng có tốc độ xử lý input thấp _(ví dụ: Libre Office)_. |
-| **Uinput (Hardcore)** |  **3**   | Biến thể của Uinput (Smooth).<br>**Tối ưu:** ứng dụng Windows qua Wine.                                                              |
-| **Surrounding Text**  |  **4**   | Cho phép sửa dấu trên văn bản đã gõ, hoạt động mượt. <br> **Tối ưu:** ứng dụng Qt/GTK.                                               |
-| **Preedit**           |  **Q**   | Hiển thị gạch chân khi gõ. <br> **Tối ưu:** hầu hết ứng dụng.                                                                        |
-| **Emoji Picker**      |  **W**   | Tìm kiếm và nhập Emoji (nguồn EmojiOne, hỗ trợ fuzzy search).                                                                        |
-| **OFF**               |  **E**   | Tắt bộ gõ.                                                                                                                           |
-| **Default Typing**    |  **R**   | Chế độ gõ mặc định được cấu hình tại tuỳ chọn _Typing mode_.                                                                         |
+| Chế độ                |   Phím tắt    | Mô tả                                                                                                                                |
+| :-------------------- | :-----------: | :----------------------------------------------------------------------------------------------------------------------------------- |
+| **Uinput (Smooth)**   |     **1**     | Chế độ mặc định, phản hồi nhanh.<br>**Tối ưu:** ứng dụng có tốc độ xử lý input cao.                                                  |
+| **Uinput (Slow)**     |     **2**     | Tương tự Uinput (Smooth) nhưng tốc độ gửi phím chậm hơn.<br>**Tối ưu:** ứng dụng có tốc độ xử lý input thấp _(ví dụ: Libre Office)_. |
+| **Uinput (Hardcore)** |     **3**     | Biến thể của Uinput (Smooth).<br>**Tối ưu:** ứng dụng Windows qua Wine.                                                              |
+| **Surrounding Text**  |     **4**     | Cho phép sửa dấu trên văn bản đã gõ, hoạt động mượt. <br> **Tối ưu:** ứng dụng Qt/GTK.                                               |
+| **Preedit**           |     **Q**     | Hiển thị gạch chân khi gõ. <br> **Tối ưu:** hầu hết ứng dụng.                                                                        |
+| **Emoji Picker**      |     **W**     | Tìm kiếm và nhập Emoji (nguồn EmojiOne, hỗ trợ fuzzy search).                                                                        |
+| **OFF**               |     **E**     | Tắt bộ gõ.                                                                                                                           |
+| **Default Typing**    |     **R**     | Chế độ gõ mặc định được cấu hình tại tuỳ chọn _Typing mode_.                                                                         |
+| **Type X**            | **X** / **F** | Gõ phím X (nếu phím để bật menu được thiết lập trong Fcitx5 configuration là phím đơn, ví dụ như phím X).                            |
 
 Bộ gõ sẽ tự động lưu chế độ gõ đã dùng gần nhất cho từng ứng dụng và khôi phục cấu hình đó khi bạn mở lại chúng.
 

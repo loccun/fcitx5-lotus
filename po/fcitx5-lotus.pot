@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-03-10 09:04+0700\n"
+"POT-Creation-Date: 2026-03-10 14:46+0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -25,7 +25,7 @@ msgstr ""
 msgid "Value"
 msgstr ""
 
-#: src/lotus-config.h:183 src/lotus-engine.cpp:129 src/lotus-engine.cpp:221
+#: src/lotus-config.h:183 src/lotus-engine.cpp:157 src/lotus-engine.cpp:249
 msgid "Macro"
 msgstr ""
 
@@ -45,15 +45,15 @@ msgstr ""
 msgid "Output Charset"
 msgstr ""
 
-#: src/lotus-config.h:199 src/lotus-engine.cpp:128
+#: src/lotus-config.h:199 src/lotus-engine.cpp:156
 msgid "Enable Spell Check"
 msgstr ""
 
-#: src/lotus-config.h:199 src/lotus-engine.cpp:129
+#: src/lotus-config.h:199 src/lotus-engine.cpp:157
 msgid "Enable Macro"
 msgstr ""
 
-#: src/lotus-config.h:200 src/lotus-engine.cpp:130 src/lotus-engine.cpp:222
+#: src/lotus-config.h:200 src/lotus-engine.cpp:158 src/lotus-engine.cpp:250
 msgid "Capitalize Macro"
 msgstr ""
 
@@ -85,64 +85,68 @@ msgstr ""
 msgid "Mode Menu Hotkey"
 msgstr ""
 
-#: src/lotus-state.cpp:246
-msgid "Page "
-msgstr ""
-
-#: src/lotus-engine.cpp:101
+#: src/lotus-engine.cpp:129
 msgid "Charset"
 msgstr ""
 
-#: src/lotus-engine.cpp:128 src/lotus-engine.cpp:220
+#: src/lotus-engine.cpp:156 src/lotus-engine.cpp:248
 msgid "Spell Check"
 msgstr ""
 
-#: src/lotus-engine.cpp:132
+#: src/lotus-engine.cpp:160
 msgid "Auto Restore Keys With Invalid Wwords"
 msgstr ""
 
-#: src/lotus-engine.cpp:133 src/lotus-engine.cpp:223
+#: src/lotus-engine.cpp:161 src/lotus-engine.cpp:251
 msgid "Auto Non-VN Restore"
 msgstr ""
 
-#: src/lotus-engine.cpp:606
+#: src/lotus-engine.cpp:651
 msgid "App: "
 msgstr ""
 
-#: src/lotus-engine.cpp:607
+#: src/lotus-engine.cpp:652
 msgid "[1] Uinput (Smooth)"
 msgstr ""
 
-#: src/lotus-engine.cpp:608
+#: src/lotus-engine.cpp:653
 msgid "[2] Uinput (Slow)"
 msgstr ""
 
-#: src/lotus-engine.cpp:609
+#: src/lotus-engine.cpp:654
 msgid "[3] Uinput (Hardcore)"
 msgstr ""
 
-#: src/lotus-engine.cpp:610
+#: src/lotus-engine.cpp:655
 msgid "[4] Surrounding Text"
 msgstr ""
 
-#: src/lotus-engine.cpp:611
-msgid "[Q] Preedit"
+#: src/lotus-engine.cpp:656
+msgid "[q] Preedit"
 msgstr ""
 
-#: src/lotus-engine.cpp:612
-msgid "[W] Emoji Picker"
+#: src/lotus-engine.cpp:657
+msgid "[w] Emoji Picker"
 msgstr ""
 
-#: src/lotus-engine.cpp:613
-msgid "[E] OFF"
+#: src/lotus-engine.cpp:658
+msgid "[e] OFF"
 msgstr ""
 
-#: src/lotus-engine.cpp:615
-msgid "[R] Default Typing"
+#: src/lotus-engine.cpp:660
+msgid "[r] Default Typing"
 msgstr ""
 
-#: src/lotus-engine.cpp:670
+#: src/lotus-engine.cpp:676
+msgid "Type"
+msgstr ""
+
+#: src/lotus-engine.cpp:731
 msgid "Lotus - Off"
+msgstr ""
+
+#: src/lotus-state.cpp:246
+msgid "Page "
 msgstr ""
 
 #: keymap-editor/editor.cpp:28

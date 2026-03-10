@@ -653,11 +653,11 @@ namespace fcitx {
         candidateList->append(std::make_unique<AppModeCandidateWord>(getLabel(LotusMode::Uinput, _("[2] Uinput (Slow)")), applyMode(LotusMode::Uinput)));
         candidateList->append(std::make_unique<AppModeCandidateWord>(getLabel(LotusMode::UinputHC, _("[3] Uinput (Hardcore)")), applyMode(LotusMode::UinputHC)));
         candidateList->append(std::make_unique<AppModeCandidateWord>(getLabel(LotusMode::SurroundingText, _("[4] Surrounding Text")), applyMode(LotusMode::SurroundingText)));
-        candidateList->append(std::make_unique<AppModeCandidateWord>(getLabel(LotusMode::Preedit, _("[Q] Preedit")), applyMode(LotusMode::Preedit)));
-        candidateList->append(std::make_unique<AppModeCandidateWord>(getLabel(LotusMode::Emoji, _("[W] Emoji Picker")), applyMode(LotusMode::Emoji)));
-        candidateList->append(std::make_unique<AppModeCandidateWord>(getLabel(LotusMode::Off, _("[E] OFF")), applyMode(LotusMode::Off)));
+        candidateList->append(std::make_unique<AppModeCandidateWord>(getLabel(LotusMode::Preedit, _("[q] Preedit")), applyMode(LotusMode::Preedit)));
+        candidateList->append(std::make_unique<AppModeCandidateWord>(getLabel(LotusMode::Emoji, _("[w] Emoji Picker")), applyMode(LotusMode::Emoji)));
+        candidateList->append(std::make_unique<AppModeCandidateWord>(getLabel(LotusMode::Off, _("[e] OFF")), applyMode(LotusMode::Off)));
 
-        candidateList->append(std::make_unique<AppModeCandidateWord>(Text(_("[R] Default Typing")), [this, cleanup](InputContext* ic) {
+        candidateList->append(std::make_unique<AppModeCandidateWord>(Text(_("[r] Default Typing")), [this, cleanup](InputContext* ic) {
             if (appRules_.count(currentConfigureApp_)) {
                 appRules_.erase(currentConfigureApp_);
                 saveAppRules();
@@ -673,9 +673,7 @@ namespace fcitx {
                 if (!charStr.empty()) {
                     KeySym      typeKeySym   = typeKeyForModeMenuHotkey(kl[0].sym());
                     std::string typeKeyLabel = Key::keySymToUTF8(typeKeySym);
-                    if (typeKeyLabel.size() == 1 && typeKeyLabel[0] >= 'a' && typeKeyLabel[0] <= 'z')
-                        typeKeyLabel[0] = static_cast<char>(typeKeyLabel[0] - 32);
-                    std::string label = "[" + typeKeyLabel + "] " + _("Type") + " '" + charStr + "'";
+                    std::string label        = "[" + typeKeyLabel + "] " + _("Type") + " " + charStr;
                     candidateList->append(std::make_unique<AppModeCandidateWord>(Text(label), [cleanup, charStr](InputContext* ic) {
                         cleanup(ic);
                         ic->commitString(charStr);
