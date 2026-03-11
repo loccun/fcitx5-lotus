@@ -187,34 +187,34 @@ namespace fcitx {
         }
 
       private:
-        Instance*                                        instance_;
-        lotusConfig                                      config_;
-        lotusCustomKeymap                                customKeymap_;
+        Instance*                                  instance_;
+        lotusConfig                                config_;
+        lotusCustomKeymap                          customKeymap_;
 
-        std::unordered_map<std::string, lotusMacroTable> macroTables_;
-        std::unordered_map<std::string, CGoObject>       macroTableObject_;
+        lotusMacroTable                            macroTables_;
+        CGoObject                                  macroTableObject_;
 
-        FactoryFor<LotusState>                           factory_;
-        std::vector<std::string>                         imNames_;
+        FactoryFor<LotusState>                     factory_;
+        std::vector<std::string>                   imNames_;
 
-        std::unique_ptr<SimpleAction>                    versionAction_;
-        std::unique_ptr<SimpleAction>                    charsetAction_;
-        std::vector<std::unique_ptr<SimpleAction>>       charsetSubAction_;
-        std::unique_ptr<Menu>                            charsetMenu_;
+        std::unique_ptr<SimpleAction>              versionAction_;
+        std::unique_ptr<SimpleAction>              charsetAction_;
+        std::vector<std::unique_ptr<SimpleAction>> charsetSubAction_;
+        std::unique_ptr<Menu>                      charsetMenu_;
 
-        std::unique_ptr<SimpleAction>                    spellCheckAction_;
-        std::unique_ptr<SimpleAction>                    macroAction_;
-        std::unique_ptr<SimpleAction>                    capitalizeMacroAction_;
-        std::unique_ptr<SimpleAction>                    autoNonVnRestoreAction_;
-        std::vector<SimpleAction*>                       toggleActions_;
-        std::vector<ScopedConnection>                    connections_;
-        CGoObject                                        dictionary_;
-        std::unordered_map<std::string, LotusMode>       appRules_;
-        std::string                                      appRulesPath_;
-        bool                                             isSelectingAppMode_ = false;
-        std::string                                      currentConfigureApp_;
-        LotusMode                                        globalMode_;
-        EmojiLoader                                      emojiLoader_;
+        std::unique_ptr<SimpleAction>              spellCheckAction_;
+        std::unique_ptr<SimpleAction>              macroAction_;
+        std::unique_ptr<SimpleAction>              capitalizeMacroAction_;
+        std::unique_ptr<SimpleAction>              autoNonVnRestoreAction_;
+        std::vector<SimpleAction*>                 toggleActions_;
+        std::vector<ScopedConnection>              connections_;
+        CGoObject                                  dictionary_;
+        std::unordered_map<std::string, LotusMode> appRules_;
+        std::string                                appRulesPath_;
+        bool                                       isSelectingAppMode_ = false;
+        std::string                                currentConfigureApp_;
+        LotusMode                                  globalMode_;
+        EmojiLoader                                emojiLoader_;
 
         /**
          * @brief Refreshes the bamboo engine with current settings.

@@ -15,6 +15,7 @@
 #include "ack-apps.h"
 #include "lotus-version.h"
 
+#include <fcitx-config/iniparser.h>
 #include <fcitx/menu.h>
 #include <fcitx/userinterfacemanager.h>
 #include <fcitx-utils/utf8.h>
@@ -27,8 +28,8 @@
 
 namespace fcitx {
     constexpr const char* CharsetActionPrefix = "lotus-charset-";
-    constexpr const char* MacroPrefix         = "macro/";
     const std::string     CustomKeymapFile    = "conf/lotus-custom-keymap.conf";
+    const std::string     MacroTableFile      = "conf/lotus-macro-table.conf";
 
     // Returns the KeySym that triggers the "Type hotkey char" action in the mode
     // menu.  If the hotkey itself conflicts with a reserved menu key, falls back
@@ -56,10 +57,6 @@ namespace fcitx {
 
     static KeySym typeKeyForModeMenuHotkey(KeySym hotkeySym) {
         return isAppModeMenuReservedKey(hotkeySym) ? FcitxKey_f : hotkeySym;
-    }
-
-    static inline std::string macroFile(const std::string& imName) {
-        return stringutils::concat("conf/lotus-macro-", imName, ".conf");
     }
 
     static inline uintptr_t newMacroTable(const lotusMacroTable& macroTable) {
@@ -91,11 +88,7 @@ namespace fcitx {
         if (config_.inputMethod.value().empty()) {
             return 0;
         }
-        auto it = macroTableObject_.find(*config_.inputMethod);
-        if (it != macroTableObject_.end()) {
-            return it->second.handle();
-        }
-        return 0;
+        return macroTableObject_.handle();
     }
 
     LotusEngine::LotusEngine(Instance* instance) : instance_(instance), factory_([this](InputContext& ic) { return new LotusState(this, &ic); }) { //NOLINT
@@ -213,25 +206,16 @@ namespace fcitx {
     void LotusEngine::reloadConfig() {
         readAsIni(config_, "conf/lotus.conf");
         readAsIni(customKeymap_, CustomKeymapFile);
-        for (const auto& imName : imNames_) {
-            auto& table = macroTables_[imName];
-            readAsIni(table, macroFile(imName));
-            macroTableObject_[imName].reset(newMacroTable(table));
-        }
+        readAsIni(macroTables_, MacroTableFile);
+        macroTableObject_.reset(newMacroTable(macroTables_));
         populateConfig();
     }
 
     const Configuration* LotusEngine::getSubConfig(const std::string& path) const {
         if (path == "custom_keymap")
             return &customKeymap_;
-#if __cplusplus >= 202002L
-        if (path.starts_with(MacroPrefix)) {
-#else
-        if (stringutils::startsWith(path, MacroPrefix)) {
-#endif
-            const auto imName = path.substr(strlen(MacroPrefix));
-            if (auto iter = macroTables_.find(imName); iter != macroTables_.end())
-                return &iter->second;
+        if (path == "macro") {
+            return &macroTables_;
         }
         return nullptr;
     }
@@ -260,18 +244,11 @@ namespace fcitx {
             safeSaveAsIni(customKeymap_, CustomKeymapFile);
             refreshEngine();
 #endif
-#if __cplusplus >= 202002L
-        } else if (path.starts_with(MacroPrefix)) {
-#else
-        } else if (stringutils::startsWith(path, MacroPrefix)) {
-#endif
-            const auto imName = path.substr(strlen(MacroPrefix));
-            if (auto iter = macroTables_.find(imName); iter != macroTables_.end()) {
-                iter->second.load(config, true);
-                safeSaveAsIni(iter->second, macroFile(imName));
-                macroTableObject_[imName].reset(newMacroTable(iter->second));
-                refreshEngine();
-            }
+        } else if (path == "macro") {
+            macroTables_.load(config, true);
+            safeSaveAsIni(macroTables_, MacroTableFile);
+            macroTableObject_.reset(newMacroTable(macroTables_));
+            refreshEngine();
         }
     }
 
