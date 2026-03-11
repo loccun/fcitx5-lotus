@@ -39,12 +39,12 @@
 /**
  * @brief Uinput device file descriptor.
  */
-extern int uinput_fd_;
+extern int uinput_fd_; //NOLINT
 
 /**
  * @brief Global flag to control server running state.
  */
-extern std::atomic<bool> g_running;
+extern std::atomic<bool> g_running; //NOLINT
 
 /**
  * @brief Signal handler for graceful shutdown.

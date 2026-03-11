@@ -15,6 +15,7 @@
 #ifndef _FCITX5_LOTUS_CONFIG_H_
 #define _FCITX5_LOTUS_CONFIG_H_
 
+#include <cstdint>
 #include <fcitx-config/configuration.h>
 #include <fcitx-utils/i18n.h>
 #include <fcitx-utils/stringutils.h>
@@ -24,7 +25,7 @@ namespace fcitx {
     /**
      * @brief Operating modes for the Lotus input method.
      */
-    enum class LotusMode {
+    enum class LotusMode : std::uint8_t {
         Off             = 0,
         Smooth          = 1,
         Uinput          = 2,
@@ -109,7 +110,7 @@ namespace fcitx {
         }
 
       protected:
-        std::vector<std::string> list_;
+        std::vector<std::string> list_; // NOLINT
     };
 
     /**
@@ -123,9 +124,6 @@ namespace fcitx {
         void dumpDescription(RawConfig& config) const {
             StringListAnnotation::dumpDescription(config);
             config.setValueByPath("LaunchSubConfig", "True");
-            for (size_t i = 0; i < list_.size(); ++i) {
-                config.setValueByPath("SubConfigPath/" + std::to_string(i), stringutils::concat("fcitx://config/addon/lotus/macro/", list_[i]));
-            }
         }
     };
 
@@ -170,9 +168,9 @@ namespace fcitx {
          * @brief Dumps description (no-op).
          * @param config Unused.
          */
-        void dumpDescription(RawConfig&) const {}
+        void dumpDescription(RawConfig& /*unused*/) const {}
 
-      protected:
+      private:
         const InputMethodOption* option_;
     };
 
@@ -198,6 +196,11 @@ namespace fcitx {
         OptionWithAnnotation<std::string, StringListAnnotation> outputCharset{this, "OutputCharset", _("Output Charset"), "Unicode", {}, {}, StringListAnnotation()};
         Option<bool> spellCheck{this, "SpellCheck", _("Enable Spell Check"), true}; Option<bool> macro{this, "Macro", _("Enable Macro"), true};
         Option<bool>                                                                             capitalizeMacro{this, "CapitalizeMacro", _("Capitalize Macro"), true};
+#ifdef ENABLE_MACRO_EDITOR
+        ExternalOption macroConfig{this, "MacroConfig", _("Macro"), "fcitx://config/addon/lotus/macro"};
+#else
+        SubConfigOption macroConfig{this, "MacroConfig", _("Macro"), "fcitx://config/addon/lotus/macro"};
+#endif
         Option<bool> autoNonVnRestore{this, "AutoNonVnRestore", _("Auto Restore Keys With Invalid Words"), true};
         Option<bool> modernStyle{this, "ModernStyle", _("Use oà, uý (Instead Of òa, úy)"), true};
         Option<bool> freeMarking{this, "FreeMarking", _("Allow Type With More Freedom"), true};

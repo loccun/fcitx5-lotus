@@ -14,7 +14,9 @@ namespace fcitx::lotus {
 
     FcitxQtConfigUIWidget* KeymapEditorPlugin::create(const QString& key) {
         if (key == "custom_keymap") {
-            return new KeymapEditor;
+            auto* editor = new KeymapEditor; //NOLINT
+            editor->load();
+            return editor;
         }
         return nullptr;
     }

@@ -32,9 +32,7 @@ class EmojiLoader {
     /**
      * @brief Constructs loader and initializes emoji list.
      */
-    EmojiLoader() {
-        emojiList = EMOJI_LIST;
-    }
+    EmojiLoader() : emojiList(EMOJI_LIST) {}
 
     /**
      * @brief Searches emoji by prefix with fuzzy matching.
@@ -61,7 +59,7 @@ class EmojiLoader {
             for (size_t i = 0; i < entry.trigger.size() && queryIndex < prefix.size(); ++i) {
                 if (entry.trigger[i] == prefix[queryIndex]) {
                     if (queryIndex == 0)
-                        firstMatchIndex = i;
+                        firstMatchIndex = i; // NOLINT
 
                     if (lastMatchIndex != -1 && (int)i == lastMatchIndex + 1) {
                         ++consecutiveMatches;
@@ -74,7 +72,7 @@ class EmojiLoader {
                         score += 50;
                     }
 
-                    lastMatchIndex = i;
+                    lastMatchIndex = i; // NOLINT
                     ++queryIndex;
                 }
             }
@@ -97,6 +95,7 @@ class EmojiLoader {
         });
 
         std::vector<EmojiEntry> finalResults;
+        finalResults.reserve(results.size());
         for (const auto& result : results) {
             finalResults.push_back(result.entry);
         }

@@ -3,7 +3,7 @@
 %global optflags %(echo "%{optflags}" | sed 's/-g[^ ]*//g')
 
 Name:           fcitx5-lotus
-Version:        1.3.1
+Version:        1.4.0
 Release:        1
 Summary:        Vietnamese input method for fcitx5
 License:        GPL-3.0-or-later
@@ -56,6 +56,7 @@ Vietnamese input method for fcitx5
 %dir %{_libdir}/fcitx5
 %{_libdir}/fcitx5/liblotus.so
 %{_libdir}/fcitx5/qt6/libfcitx5-lotus-keymap-editor.so
+%{_libdir}/fcitx5/qt6/libfcitx5-lotus-macro-editor.so
 
 %{_prefix}/lib/modules-load.d/fcitx5-lotus.conf
 %{_unitdir}/fcitx5-lotus-server@.service
@@ -144,6 +145,9 @@ echo "------------------------------------------------"
 %systemd_postun_with_restart fcitx5-lotus-server@.service
 
 %changelog
-* Tue Mar 10 2026 Nguyen Hoang Ky <nhktmdzhg@gmail.com> - 1.3.1-1
-- Add logger for easy debugging
-- Simplify UI actions
+* Wed Mar 11 2026 Nguyen Hoang Ky <nhktmdzhg@gmail.com> - 1.4.0-1
+- Enhance hotkey handling and app mode selection
+- Fix some bugs
+- Use common macro table for all input method
+- Add Macro Editor Qt GUI
+- Add Import/Export tsv function for keymap and macro

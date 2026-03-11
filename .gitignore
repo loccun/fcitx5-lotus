@@ -14,6 +14,7 @@ XF86keysym.h
 keysymdef.h
 *~
 !.clang-format
+!.clang-tidy
 
 # CMake build files
 CMakeCache.txt
@@ -22,8 +23,16 @@ cmake_install.cmake
 ecm_uninstall.cmake
 install_manifest.txt
 org.fcitx.Fcitx5.Addon.Lotus.metainfo.xml
+org.fcitx.Fcitx5.Addon.Lotus.metainfo.xml.in
 Makefile
 .vscode/
 compile_commands.json
 !.all-contributorsrc
 refresh-contributor
+
+# Qt AUTOMOC generated files
+*_autogen/
+
+# Compiled outputs
+*.so
+lotus-version.h

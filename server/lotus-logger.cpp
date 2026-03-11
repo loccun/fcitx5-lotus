@@ -7,16 +7,18 @@
 
 #include "lotus-logger.h"
 
+#include <cstddef>
 #include <iomanip>
 #include <sstream>
 #include <chrono>
 #include <iostream>
 #include <filesystem>
+#include <utility>
 
 #include <sys/stat.h>
 
-LotusLogger::LotusLogger(const std::string& log_file, size_t max_size, size_t max_files, LogLevel level) :
-    log_file_(log_file), max_size_(max_size), max_files_(max_files), level_(level) {
+LotusLogger::LotusLogger(std::string log_file, size_t max_size, LogLevel level, size_t max_files) :
+    log_file_(std::move(log_file)), max_size_(max_size), max_files_(max_files), level_(level) {
 
     std::filesystem::path path(log_file_);
     if (path.has_parent_path()) {
@@ -26,9 +28,9 @@ LotusLogger::LotusLogger(const std::string& log_file, size_t max_size, size_t ma
     file_.open(log_file_, std::ios_base::app | std::ios_base::out);
 
     if (!file_.is_open()) {
-        std::cerr << "[ERROR] Failed to open log file: " << log_file_ << std::endl;
+        std::cerr << "[ERROR] Failed to open log file: " << log_file_ << '\n';
     }
-    struct stat st;
+    struct stat st{};
     if (stat(log_file_.c_str(), &st) == 0) {
         current_size_ = st.st_size;
     } else {
@@ -82,7 +84,7 @@ void LotusLogger::rotate() {
     }
     file_.close();
 
-    for (int i = static_cast<int>(max_files_) - 1; i >= 0; --i) {
+    for (size_t i = max_files_; i-- > 0;) {
         std::string old_file = (i == 0) ? log_file_ : log_file_ + "." + std::to_string(i);
         std::string new_file = log_file_ + "." + std::to_string(i + 1);
 
@@ -98,11 +100,12 @@ void LotusLogger::rotate() {
 }
 
 std::string LotusLogger::getTimestamp() {
-    auto      now    = std::chrono::system_clock::now();
-    auto      time_t = std::chrono::system_clock::to_time_t(now);
-    auto      ms     = std::chrono::duration_cast<std::chrono::milliseconds>(now.time_since_epoch()) % 1000;
+    auto now    = std::chrono::system_clock::now();
+    auto time_t = std::chrono::system_clock::to_time_t(now);
+    // NOLINTNEXTLINE(cppcoreguidelines-avoid-magic-numbers)
+    auto      ms = std::chrono::duration_cast<std::chrono::milliseconds>(now.time_since_epoch()) % 1000;
 
-    struct tm buf;
+    struct tm buf{};
     localtime_r(&time_t, &buf);
 
     std::stringstream ss;
@@ -120,5 +123,3 @@ std::string LotusLogger::levelToString(LogLevel level) {
         default: return "UNKNOWN";
     }
 }
-
-LotusLogger g_logger("/tmp/fcitx5-lotus-server.log", 10 * 1024 * 1024, 5, LogLevel::INFO);

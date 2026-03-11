@@ -19,6 +19,8 @@
 #include "emoji_data.h"
 #include "lotus-utils.h"
 
+#include <cstddef>
+#include <fcitx-utils/misc.h>
 #include <fcitx/inputcontext.h>
 
 #include <atomic>
@@ -43,11 +45,6 @@ namespace fcitx {
          * @param ic Pointer to the input context.
          */
         LotusState(LotusEngine* engine, InputContext* ic);
-
-        /**
-         * @brief Destroys the state and releases resources.
-         */
-        ~LotusState();
 
         /**
          * @brief Initializes the bamboo engine for this state.
@@ -109,19 +106,19 @@ namespace fcitx {
          * @brief Connects to the uinput server.
          * @return True if connection successful.
          */
-        bool connect_uinput_server();
+        static bool connect_uinput_server();
 
         /**
          * @brief Sets up uinput device.
          * @return File descriptor or -1 on error.
          */
-        int setup_uinput();
+        static int setup_uinput();
 
         /**
          * @brief Sends backspace key events via uinput.
          * @param count Number of backspaces to send.
          */
-        void send_backspace_uinput(int count);
+        void send_backspace_uinput(size_t count) const;
 
         /**
          * @brief Replays buffer content to the engine.
@@ -203,6 +200,12 @@ namespace fcitx {
          * @param currentSym Current key symbol.
          */
         void handleSurroundingText(KeyEvent& keyEvent, KeySym currentSym);
+
+        /**
+         * @brief Handles processing normal key events.
+         * @param keyEvent The key event.
+        */
+        void processNormalKey(KeyEvent& keyEvent);
 
         /**
          * @brief Replays keystrokes buffered during replacement.

@@ -94,7 +94,7 @@ void mousePressResetThread() {
         struct sockaddr_un addr{};
         addr.sun_family  = AF_UNIX;
         addr.sun_path[0] = '\0';
-        memcpy(addr.sun_path + 1, mouse_socket_path.c_str(), mouse_socket_path.length());
+        memcpy(&addr.sun_path[1], mouse_socket_path.c_str(), mouse_socket_path.length());
         socklen_t len = offsetof(struct sockaddr_un, sun_path) + mouse_socket_path.length() + 1;
 
         if (connect(sock, (struct sockaddr*)&addr, len) < 0) {
@@ -106,14 +106,14 @@ void mousePressResetThread() {
         LOTUS_INFO("Mouse socket connected.");
         mouse_socket_fd.store(sock, std::memory_order_release);
 
-        struct pollfd pfd;
+        struct pollfd pfd{};
         pfd.fd     = sock;
         pfd.events = POLLIN;
 
         while (!stop_flag_monitor.load(std::memory_order_relaxed)) {
             int ret = poll(&pfd, 1, -1);
 
-            if (ret > 0 && (pfd.revents & POLLIN)) {
+            if (ret > 0 && ((pfd.revents & POLLIN) != 0)) {
                 char    buf[16];
                 ssize_t n = recv(sock, buf, sizeof(buf), 0);
 
@@ -122,7 +122,7 @@ void mousePressResetThread() {
                     break;
                 }
 
-                struct ucred cred;
+                struct ucred cred{};
                 socklen_t    len                = sizeof(struct ucred);
                 char         exe_path[PATH_MAX] = {0};
                 if (getsockopt(sock, SOL_SOCKET, SO_PEERCRED, &cred, &len) == 0) {

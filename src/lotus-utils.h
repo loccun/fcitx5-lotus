@@ -20,6 +20,8 @@
 #include <sys/un.h>
 #include <fcitx-utils/log.h>
 
+#include "lotus-config.h"
+
 /**
  * @brief Maximum length of Unix socket paths.
 */
@@ -33,11 +35,7 @@ FCITX_DECLARE_LOG_CATEGORY(lotus);
 #define LOTUS_ERROR(msg) FCITX_LOGC(lotus, Error) << "[ERROR] " << msg
 
 // Forward declaration for fcitx types
-typedef uint32_t KeySym;
-
-namespace fcitx {
-    enum class LotusMode;
-}
+using KeySym = uint32_t;
 
 // Global state variables for input processing
 extern fcitx::LotusMode        realMode;               ///< Current active input mode
@@ -49,7 +47,7 @@ extern std::once_flag          monitor_init_flag;      ///< One-time initializat
 extern std::atomic<bool>       stop_flag_monitor;      ///< Signal to stop monitor threads
 extern std::atomic<bool>       monitor_running;        ///< Monitor thread status
 extern int                     uinput_client_fd_;      ///< Uinput client file descriptor
-extern int                     realtextLen;            ///< Current text length
+extern unsigned int            realtextLen;            ///< Current text length
 extern std::atomic<int>        mouse_socket_fd;        ///< Mouse socket file descriptor
 extern std::atomic<int64_t>    replacement_start_ms_;  ///< Timestamp for replacement
 extern std::atomic<int>        replacement_thread_id_; ///< Thread ID for replacement

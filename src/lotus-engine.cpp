@@ -15,6 +15,7 @@
 #include "ack-apps.h"
 #include "lotus-version.h"
 
+#include <fcitx-config/iniparser.h>
 #include <fcitx/menu.h>
 #include <fcitx/userinterfacemanager.h>
 #include <fcitx-utils/utf8.h>
@@ -26,21 +27,46 @@
 #include <fcntl.h>
 
 namespace fcitx {
-    constexpr const char*     CharsetActionPrefix = "lotus-charset-";
-    constexpr const char*     MacroPrefix         = "macro/";
-    const std::string         CustomKeymapFile    = "conf/lotus-custom-keymap.conf";
+    constexpr const char* CharsetActionPrefix = "lotus-charset-";
+    const std::string     CustomKeymapFile    = "conf/lotus-custom-keymap.conf";
+    const std::string     MacroTableFile      = "conf/lotus-macro-table.conf";
 
-    static inline std::string macroFile(const std::string& imName) {
-        return stringutils::concat("conf/lotus-macro-", imName, ".conf");
+    // Returns the KeySym that triggers the "Type hotkey char" action in the mode
+    // menu.  If the hotkey itself conflicts with a reserved menu key, falls back
+    // to FcitxKey_f.
+    static bool isAppModeMenuReservedKey(KeySym sym) {
+        switch (sym) {
+            case FcitxKey_1:
+            case FcitxKey_2:
+            case FcitxKey_3:
+            case FcitxKey_4:
+            case FcitxKey_q:
+            case FcitxKey_w:
+            case FcitxKey_e:
+            case FcitxKey_r:
+            case FcitxKey_Escape:
+            case FcitxKey_Tab:
+            case FcitxKey_ISO_Left_Tab:
+            case FcitxKey_Return:
+            case FcitxKey_space:
+            case FcitxKey_Up:
+            case FcitxKey_Down: return true;
+            default: return false;
+        }
+    }
+
+    static KeySym typeKeyForModeMenuHotkey(KeySym hotkeySym) {
+        return isAppModeMenuReservedKey(hotkeySym) ? FcitxKey_f : hotkeySym;
     }
 
     static inline uintptr_t newMacroTable(const lotusMacroTable& macroTable) {
         const auto&        macros = *macroTable.macros;
         std::vector<char*> charArray;
-        charArray.reserve(macros.size() * 2 + 1);
+        charArray.reserve((macros.size() * 2) + 1);
         for (const auto& keymap : macros) {
-            charArray.push_back(const_cast<char*>(keymap.key->data()));
-            charArray.push_back(const_cast<char*>(keymap.value->data()));
+            // External C API doesn't use const, but doesn't modify data
+            charArray.push_back(const_cast<char*>(keymap.key->data()));   //NOLINT
+            charArray.push_back(const_cast<char*>(keymap.value->data())); //NOLINT
         }
         charArray.push_back(nullptr);
         return NewMacroTable(charArray.data());
@@ -48,12 +74,12 @@ namespace fcitx {
 
     static inline std::vector<std::string> convertToStringList(char** list) {
         std::vector<std::string> result;
-        if (list) {
-            for (size_t i = 0; list[i]; ++i) {
-                result.emplace_back(list[i]);
-                free(list[i]);
+        if (list != nullptr) {
+            for (size_t i = 0; list[i] != nullptr; ++i) { //NOLINT
+                result.emplace_back(list[i]);             //NOLINT
+                free(list[i]);                            //NOLINT
             }
-            free(list);
+            free(list); //NOLINT
         }
         return result;
     }
@@ -62,14 +88,10 @@ namespace fcitx {
         if (config_.inputMethod.value().empty()) {
             return 0;
         }
-        auto it = macroTableObject_.find(*config_.inputMethod);
-        if (it != macroTableObject_.end()) {
-            return it->second.handle();
-        }
-        return 0;
+        return macroTableObject_.handle();
     }
 
-    LotusEngine::LotusEngine(Instance* instance) : instance_(instance), factory_([this](InputContext& ic) { return new LotusState(this, &ic); }) {
+    LotusEngine::LotusEngine(Instance* instance) : instance_(instance), factory_([this](InputContext& ic) { return new LotusState(this, &ic); }) { //NOLINT
         startMonitoringOnce();
         Init();
         {
@@ -107,7 +129,7 @@ namespace fcitx {
         auto charsets = convertToStringList(GetCharsetNames());
         for (const auto& charset : charsets) {
             charsetSubAction_.emplace_back(std::make_unique<SimpleAction>());
-            auto action = charsetSubAction_.back().get();
+            auto* action = charsetSubAction_.back().get();
             action->setShortText(charset);
             action->setCheckable(true);
             uiManager.registerAction(stringutils::concat(CharsetActionPrefix, charset), action);
@@ -167,7 +189,7 @@ namespace fcitx {
 
     void LotusEngine::updateAction(InputContext* ic, std::unique_ptr<SimpleAction>& action, Option<bool>& option, const std::string& textOnOff) {
         action->setShortText((option.value() ? "✔ " : "✖ ") + textOnOff);
-        if (ic) {
+        if (ic != nullptr) {
             action->update(ic);
         }
     }
@@ -184,25 +206,16 @@ namespace fcitx {
     void LotusEngine::reloadConfig() {
         readAsIni(config_, "conf/lotus.conf");
         readAsIni(customKeymap_, CustomKeymapFile);
-        for (const auto& imName : imNames_) {
-            auto& table = macroTables_[imName];
-            readAsIni(table, macroFile(imName));
-            macroTableObject_[imName].reset(newMacroTable(table));
-        }
+        readAsIni(macroTables_, MacroTableFile);
+        macroTableObject_.reset(newMacroTable(macroTables_));
         populateConfig();
     }
 
     const Configuration* LotusEngine::getSubConfig(const std::string& path) const {
         if (path == "custom_keymap")
             return &customKeymap_;
-#if __cplusplus >= 202002L
-        if (path.starts_with(MacroPrefix)) {
-#else
-        if (stringutils::startsWith(path, MacroPrefix)) {
-#endif
-            const auto imName = path.substr(strlen(MacroPrefix));
-            if (auto iter = macroTables_.find(imName); iter != macroTables_.end())
-                return &iter->second;
+        if (path == "macro") {
+            return &macroTables_;
         }
         return nullptr;
     }
@@ -224,35 +237,33 @@ namespace fcitx {
     }
 
     void LotusEngine::setSubConfig(const std::string& path, const RawConfig& config) {
-        if (path == "custom_keymap") {
+        if (path == "custom_keymap") { // NOLINT
 #ifdef ENABLE_KEYMAP_EDITOR
+            FCITX_UNUSED(config);
 #else
             customKeymap_.load(config, true);
             safeSaveAsIni(customKeymap_, CustomKeymapFile);
             refreshEngine();
 #endif
-#if __cplusplus >= 202002L
-        } else if (path.starts_with(MacroPrefix)) {
+        } else if (path == "macro") {
+#ifdef ENABLE_MACRO_EDITOR
+            FCITX_UNUSED(config);
 #else
-        } else if (stringutils::startsWith(path, MacroPrefix)) {
+            macroTables_.load(config, true);
+            safeSaveAsIni(macroTables_, MacroTableFile);
+            macroTableObject_.reset(newMacroTable(macroTables_));
+            refreshEngine();
 #endif
-            const auto imName = path.substr(strlen(MacroPrefix));
-            if (auto iter = macroTables_.find(imName); iter != macroTables_.end()) {
-                iter->second.load(config, true);
-                safeSaveAsIni(iter->second, macroFile(imName));
-                macroTableObject_[imName].reset(newMacroTable(iter->second));
-                refreshEngine();
-            }
         }
     }
 
-    std::string LotusEngine::subMode(const InputMethodEntry&, InputContext&) {
+    std::string LotusEngine::subMode(const InputMethodEntry& /*entry*/, InputContext& /*inputContext*/) {
         return *config_.inputMethod;
     }
 
     void LotusEngine::activate(const InputMethodEntry& entry, InputContextEvent& event) {
         FCITX_UNUSED(entry);
-        auto                     ic = event.inputContext();
+        auto*                    ic = event.inputContext();
         static std::atomic<bool> mouseThreadStarted{false};
         if (!mouseThreadStarted.exchange(true))
             startMouseReset();
@@ -263,25 +274,25 @@ namespace fcitx {
 
         std::string appName = getProgramName(ic);
         LOTUS_INFO("App name: " + appName);
-        LotusMode targetMode;
 
-        if (!appRules_.empty() && appRules_.count(appName)) {
-            targetMode = appRules_[appName];
-        } else {
-            targetMode = globalMode_;
-        }
+        auto            it         = appRules_.find(appName);
+        const LotusMode targetMode = (it != appRules_.end()) ? it->second : globalMode_;
         LOTUS_INFO("Target mode: " + modeEnumToString(targetMode));
         reloadConfig();
         updateCharsetAction(event.inputContext());
 
         setMode(targetMode, event.inputContext());
 
-        auto state = ic->propertyFor(&factory_);
+        auto* state = ic->propertyFor(&factory_);
 
         state->waitAck_ = false;
         if (*config_.fixUinputWithAck) {
             if (targetMode == LotusMode::Uinput || targetMode == LotusMode::UinputHC || targetMode == LotusMode::Smooth) {
+#if __cplusplus >= 202002L
+                std::ranges::transform(appName, appName.begin(), ::tolower);
+#else
                 std::transform(appName.begin(), appName.end(), appName.begin(), ::tolower);
+#endif
                 for (const auto& ackApp : ack_apps) {
                     if (appName.find(ackApp) != std::string::npos) {
                         state->waitAck_ = true;
@@ -305,13 +316,13 @@ namespace fcitx {
 
     void LotusEngine::keyEvent(const InputMethodEntry& entry, KeyEvent& keyEvent) {
         FCITX_UNUSED(entry);
-        auto ic = keyEvent.inputContext();
+        auto* ic = keyEvent.inputContext();
 
         if (isSelectingAppMode_ && g_mouse_clicked.load(std::memory_order_relaxed)) {
             closeAppModeMenu();
             ic->inputPanel().reset();
             ic->updateUserInterface(UserInterfaceComponent::InputPanel);
-            auto state = ic->propertyFor(&factory_);
+            auto* state = ic->propertyFor(&factory_);
             state->reset();
         }
 
@@ -411,8 +422,7 @@ namespace fcitx {
                     break;
                 }
                 case FcitxKey_r: {
-                    if (appRules_.count(currentConfigureApp_)) {
-                        appRules_.erase(currentConfigureApp_);
+                    if (appRules_.erase(currentConfigureApp_) > 0) {
                         saveAppRules();
                     }
                     selectedMode  = globalMode_;
@@ -423,7 +433,24 @@ namespace fcitx {
                     selectionMade = true;
                     break;
                 }
-                default: break;
+                default: {
+                    const auto& kl = *config_.modeMenuKey;
+                    if (kl.size() == 1 && !kl[0].hasModifier()) {
+                        std::string charStr = Key::keySymToUTF8(kl[0].sym());
+                        if (!charStr.empty()) {
+                            if (keySym == typeKeyForModeMenuHotkey(kl[0].sym())) {
+                                isSelectingAppMode_ = false;
+                                ic->inputPanel().reset();
+                                ic->updateUserInterface(UserInterfaceComponent::InputPanel);
+                                auto* state = ic->propertyFor(&factory_);
+                                state->reset();
+                                ic->commitString(charStr);
+                                return;
+                            }
+                        }
+                    }
+                    break;
+                }
             }
 
             if (selectedMode != LotusMode::NoMode) {
@@ -441,7 +468,7 @@ namespace fcitx {
                 isSelectingAppMode_ = false;
                 ic->inputPanel().reset();
                 ic->updateUserInterface(UserInterfaceComponent::InputPanel);
-                auto state = ic->propertyFor(&factory_);
+                auto* state = ic->propertyFor(&factory_);
                 state->reset();
             }
             return;
@@ -455,20 +482,20 @@ namespace fcitx {
             keyEvent.filterAndAccept();
             return;
         }
-        auto state = keyEvent.inputContext()->propertyFor(&factory_);
+        auto* state = keyEvent.inputContext()->propertyFor(&factory_);
         state->keyEvent(keyEvent);
-        const auto& s       = ic->surroundingText();
-        const auto& text    = s.text();
-        size_t      textLen = fcitx_utf8_strlen(text.c_str());
-        int         cursor  = s.cursor();
+        const auto&  s       = ic->surroundingText();
+        const auto&  text    = s.text();
+        size_t       textLen = fcitx_utf8_strlen(text.c_str());
+        unsigned int cursor  = s.cursor();
         if (textLen == static_cast<size_t>(cursor))
-            realtextLen = static_cast<int>(textLen);
+            realtextLen = static_cast<unsigned int>(textLen);
     }
 
     void LotusEngine::reset(const InputMethodEntry& entry, InputContextEvent& event) {
         LOTUS_INFO("Reset engine");
         FCITX_UNUSED(entry);
-        auto state = event.inputContext()->propertyFor(&factory_);
+        auto* state = event.inputContext()->propertyFor(&factory_);
         if (!state->isEmptyHistory() && event.type() != EventType::InputContextFocusOut) {
             return;
         }
@@ -480,19 +507,17 @@ namespace fcitx {
 
     void LotusEngine::deactivate(const InputMethodEntry& entry, InputContextEvent& event) {
         FCITX_UNUSED(entry);
-        auto state = event.inputContext()->propertyFor(&factory_);
-        if (realMode == LotusMode::Preedit) {
-            if (event.type() != EventType::InputContextFocusOut)
-                state->commitBuffer();
-            else
-                state->reset();
+        auto* ic    = event.inputContext();
+        auto* state = ic->propertyFor(&factory_);
+        if (realMode == LotusMode::Preedit && event.type() != EventType::InputContextFocusOut) {
+            state->commitBuffer();
         } else {
             state->clearAllBuffers();
             is_deleting_.store(false);
             needEngineReset.store(false);
-            event.inputContext()->inputPanel().reset();
-            event.inputContext()->updateUserInterface(UserInterfaceComponent::InputPanel);
-            event.inputContext()->updatePreedit();
+            ic->inputPanel().reset();
+            ic->updateUserInterface(UserInterfaceComponent::InputPanel);
+            ic->updatePreedit();
         }
     }
 
@@ -500,7 +525,7 @@ namespace fcitx {
         if (!factory_.registered())
             return;
         instance_->inputContextManager().foreach ([this](InputContext* ic) {
-            auto state = ic->propertyFor(&factory_);
+            auto* state = ic->propertyFor(&factory_);
             state->setEngine();
             if (ic->hasFocus())
                 state->reset();
@@ -512,7 +537,7 @@ namespace fcitx {
         if (!factory_.registered())
             return;
         instance_->inputContextManager().foreach ([this](InputContext* ic) {
-            auto state = ic->propertyFor(&factory_);
+            auto* state = ic->propertyFor(&factory_);
             state->setOption();
             if (ic->hasFocus())
                 state->reset();
@@ -524,7 +549,7 @@ namespace fcitx {
         auto name = stringutils::concat(CharsetActionPrefix, *config_.outputCharset);
         for (const auto& action : charsetSubAction_) {
             action->setChecked(action->name() == name);
-            if (ic)
+            if (ic != nullptr)
                 action->update(ic);
         }
     }
@@ -578,16 +603,15 @@ namespace fcitx {
         auto getLabel = [&](const LotusMode& modeName, const std::string& modeLabel) {
             if (modeName == realMode) {
                 return Text(">> " + modeLabel);
-            } else {
-                return Text("   " + modeLabel);
             }
+            return Text("   " + modeLabel);
         };
 
         auto cleanup = [this](InputContext* ic) {
             isSelectingAppMode_ = false;
             ic->inputPanel().reset();
             ic->updateUserInterface(UserInterfaceComponent::InputPanel);
-            auto state = ic->propertyFor(&factory_);
+            auto* state = ic->propertyFor(&factory_);
             state->reset();
         };
 
@@ -608,18 +632,33 @@ namespace fcitx {
         candidateList->append(std::make_unique<AppModeCandidateWord>(getLabel(LotusMode::Uinput, _("[2] Uinput (Slow)")), applyMode(LotusMode::Uinput)));
         candidateList->append(std::make_unique<AppModeCandidateWord>(getLabel(LotusMode::UinputHC, _("[3] Uinput (Hardcore)")), applyMode(LotusMode::UinputHC)));
         candidateList->append(std::make_unique<AppModeCandidateWord>(getLabel(LotusMode::SurroundingText, _("[4] Surrounding Text")), applyMode(LotusMode::SurroundingText)));
-        candidateList->append(std::make_unique<AppModeCandidateWord>(getLabel(LotusMode::Preedit, _("[Q] Preedit")), applyMode(LotusMode::Preedit)));
-        candidateList->append(std::make_unique<AppModeCandidateWord>(getLabel(LotusMode::Emoji, _("[W] Emoji Picker")), applyMode(LotusMode::Emoji)));
-        candidateList->append(std::make_unique<AppModeCandidateWord>(getLabel(LotusMode::Off, _("[E] OFF")), applyMode(LotusMode::Off)));
+        candidateList->append(std::make_unique<AppModeCandidateWord>(getLabel(LotusMode::Preedit, _("[q] Preedit")), applyMode(LotusMode::Preedit)));
+        candidateList->append(std::make_unique<AppModeCandidateWord>(getLabel(LotusMode::Emoji, _("[w] Emoji Picker")), applyMode(LotusMode::Emoji)));
+        candidateList->append(std::make_unique<AppModeCandidateWord>(getLabel(LotusMode::Off, _("[e] OFF")), applyMode(LotusMode::Off)));
 
-        candidateList->append(std::make_unique<AppModeCandidateWord>(Text(_("[R] Default Typing")), [this, cleanup](InputContext* ic) {
-            if (appRules_.count(currentConfigureApp_)) {
-                appRules_.erase(currentConfigureApp_);
+        candidateList->append(std::make_unique<AppModeCandidateWord>(Text(_("[r] Default Typing")), [this, cleanup](InputContext* ic) {
+            if (appRules_.erase(currentConfigureApp_) > 0) {
                 saveAppRules();
             }
             setMode(globalMode_, ic);
             cleanup(ic);
         }));
+
+        {
+            const auto& kl = *config_.modeMenuKey;
+            if (kl.size() == 1 && !kl[0].hasModifier()) {
+                std::string charStr = Key::keySymToUTF8(kl[0].sym());
+                if (!charStr.empty()) {
+                    KeySym      typeKeySym   = typeKeyForModeMenuHotkey(kl[0].sym());
+                    std::string typeKeyLabel = Key::keySymToUTF8(typeKeySym);
+                    std::string label        = "[" + typeKeyLabel + "] " + _("Type") + " " + charStr;
+                    candidateList->append(std::make_unique<AppModeCandidateWord>(Text(label), [cleanup, charStr](InputContext* ic) {
+                        cleanup(ic);
+                        ic->commitString(charStr);
+                    }));
+                }
+            }
+        }
 
         int selectedIndex = 1;
         switch (realMode) {
@@ -641,7 +680,7 @@ namespace fcitx {
 
     void LotusEngine::setMode(LotusMode mode, InputContext* ic) {
         realMode = mode;
-        if (ic) {
+        if (ic != nullptr) {
             ic->updateUserInterface(UserInterfaceComponent::StatusArea);
         }
     }

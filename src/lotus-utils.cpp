@@ -21,7 +21,7 @@ std::once_flag          monitor_init_flag;
 std::atomic<bool>       stop_flag_monitor{false};
 std::atomic<bool>       monitor_running{false};
 int                     uinput_client_fd_ = -1;
-int                     realtextLen       = 0;
+unsigned int            realtextLen       = 0;
 std::atomic<int>        mouse_socket_fd{-1};
 
 std::atomic<int64_t>    replacement_start_ms_{0};
@@ -38,7 +38,7 @@ std::string buildSocketPath(const char* base_path_suffix) {
     std::string path;
     path.reserve(32);
     path += "lotussocket-";
-    path += (username_c ? username_c : "unknown");
+    path += ((username_c != nullptr) ? username_c : "unknown");
     path += '-';
     path += base_path_suffix;
     const size_t max_socket_path_length = UNIX_PATH_MAX - 1;
@@ -61,31 +61,28 @@ std::string SubstrChar(const std::string& s, size_t start, size_t len) {
     if (*start_ptr == '\0')
         return "";
     if (len == std::string::npos)
-        return std::string(start_ptr);
+        return {start_ptr};
     const char* end_ptr = fcitx_utf8_get_nth_char(start_ptr, static_cast<uint32_t>(len));
     return std::string(start_ptr, end_ptr - start_ptr);
 }
 
 int compareAndSplitStrings(const std::string& A, const std::string& B, std::string& commonPrefix, std::string& deletedPart, std::string& addedPart) {
-    const char* ptrA   = A.c_str();
-    const char* ptrB   = B.c_str();
-    const char* endA   = ptrA + A.size();
-    const char* endB   = ptrB + B.size();
-    const char* startA = ptrA;
+    size_t i = 0;
+    size_t j = 0;
 
-    while (ptrA < endA && ptrB < endB) {
-        unsigned int lenA = fcitx_utf8_char_len(ptrA);
-        unsigned int lenB = fcitx_utf8_char_len(ptrB);
-        if (lenA == lenB && std::strncmp(ptrA, ptrB, lenA) == 0) {
-            ptrA += lenA;
-            ptrB += lenB;
+    while (i < A.size() && j < B.size()) {
+        unsigned int lenA = fcitx_utf8_char_len(&A[i]);
+        unsigned int lenB = fcitx_utf8_char_len(&B[j]);
+        if (lenA == lenB && std::strncmp(&A[i], &B[j], lenA) == 0) {
+            i += lenA;
+            j += lenB;
         } else {
             break;
         }
     }
 
-    commonPrefix.assign(startA, ptrA);
-    deletedPart.assign(ptrA, endA);
-    addedPart.assign(ptrB, endB);
+    commonPrefix = A.substr(0, i);
+    deletedPart  = A.substr(i);
+    addedPart    = B.substr(j);
     return (deletedPart.empty() && addedPart.empty()) ? 1 : 2;
 }
