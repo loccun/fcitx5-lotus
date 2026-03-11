@@ -274,6 +274,8 @@ sudo make install PREFIX=/usr/local
 
 After installation, you need to follow these steps to enable the fcitx5-lotus input method:
 
+> **💡 Automated:** If you install via **Debian/Ubuntu** (`.deb`), the post-install script will interactively walk you through steps 1–3 below with `[y/n]` prompts. Just confirm each step — no manual commands needed.
+
 ### 1. Enable Lotus Server
 
 The server helps the input method interact better with the system (especially sending backspace and fixing errors).
@@ -504,15 +506,15 @@ Advanced options available here:
 - **Custom Keymap:** Click the gear icon on the _Custom Keymap_ row to customize your keymap. Select **Custom** input method to apply.
 - **Menu Hotkey:** Change the key to open the mode menu (default is `` ` ``) at _Mode menu hotkey_.
 
-| Option | Description | Default |
-| :---------------------- | :----------------------------------------------------------------------------------------------------------------------------- | :-------------- |
-| **Mode** | Select typing mode. | Uinput (Smooth) |
-| **Input Method** | Select input method. | Telex |
-| **Use oà, uý (Instead Of òa, úy)** | Enable/disable modern tone mark placement style. | On |
-| **Allow Type With More Freedom** | Enable/disable free tone marking. | On |
-| **Allow dd To Produce đ When Auto Restore Keys With Invalid Words Is On** | Enable/disable allowing "dd" to produce "đ" when _Auto non-VN restore_ is On | On |
-| **Fix Uinput Mode With Ack** | Recommended when using Chromium-based applications (Chrome, Brave, Edge, ...). | Off |
-| **Use Lotus Status Icons** | Enable/disable using Lotus icons instead of the default V/E icons. | Off |
+| Option                                                                    | Description                                                                    | Default         |
+| :------------------------------------------------------------------------ | :----------------------------------------------------------------------------- | :-------------- |
+| **Mode**                                                                  | Select typing mode.                                                            | Uinput (Smooth) |
+| **Input Method**                                                          | Select input method.                                                           | Telex           |
+| **Use oà, uý (Instead Of òa, úy)**                                        | Enable/disable modern tone mark placement style.                               | On              |
+| **Allow Type With More Freedom**                                          | Enable/disable free tone marking.                                              | On              |
+| **Allow dd To Produce đ When Auto Restore Keys With Invalid Words Is On** | Enable/disable allowing "dd" to produce "đ" when _Auto non-VN restore_ is On   | On              |
+| **Fix Uinput Mode With Ack**                                              | Recommended when using Chromium-based applications (Chrome, Brave, Edge, ...). | Off             |
+| **Use Lotus Status Icons**                                                | Enable/disable using Lotus icons instead of the default V/E icons.             | Off             |
 
 </details>
 

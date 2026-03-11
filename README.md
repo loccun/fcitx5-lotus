@@ -274,6 +274,8 @@ sudo make install PREFIX=/usr/local
 
 Sau khi cài đặt xong, bạn cần thực hiện các bước sau để bật bộ gõ fcitx5-lotus:
 
+> **💡 Tự động hoá:** Nếu bạn cài qua **Debian/Ubuntu** (`.deb`), post-install script sẽ tự hỏi bạn từng bước 1–3 bên dưới với lựa chọn `[y/n]`. Bạn chỉ cần xác nhận là xong — không cần chạy thủ công.
+
 ### 1. Bật Lotus Server
 
 Server giúp bộ gõ tương tác với hệ thống tốt hơn (đặc biệt là gửi phím xóa và sửa lỗi).
@@ -503,15 +505,15 @@ Tại đây bạn có thể tùy chỉnh chi tiết:
 - **Keymap tùy chỉnh:** Nhấn bánh răng dòng _Custom Keymap_ để tự định nghĩa phím. Chọn kiểu gõ **Custom** để áp dụng.
 - **Phím tắt Menu:** Đổi phím nóng mở menu chế độ gõ (mặc định là `` ` ``) tại dòng _Mode menu hotkey_.
 
-| Tùy chọn | Mô tả | Mặc định |
-| :---------------------- | :------------------------------------------------------ | :------- |
-| **Mode** | Chọn chế độ gõ. | Uinput (Smooth) |
-| **Input Method** | Chọn kiểu gõ. | Telex |
-| **Use oà, uý (Instead Of òa, úy)** | Bật/tắt kiểu đặt dấu thanh hiện đại. | Bật |
-| **Allow Type With More Freedom** | Bật/tắt bỏ dấu tự do. | Bật |
-| **Allow dd To Produce đ When Auto Restore Keys With Invalid Words Is On** | Bật/tắt cho phép "dd" tạo "đ" khi dùng _Auto non-VN restore_. | Bật |
-| **Fix Uinput Mode With Ack** | Khuyên dùng cho ứng dụng Chromium (Chrome, Brave, Edge, ...). | Tắt |
-| **Use Lotus Status Icons** | Dùng icon Lotus thay vì icon V/E mặc định. | Tắt |
+| Tùy chọn                                                                  | Mô tả                                                         | Mặc định        |
+| :------------------------------------------------------------------------ | :------------------------------------------------------------ | :-------------- |
+| **Mode**                                                                  | Chọn chế độ gõ.                                               | Uinput (Smooth) |
+| **Input Method**                                                          | Chọn kiểu gõ.                                                 | Telex           |
+| **Use oà, uý (Instead Of òa, úy)**                                        | Bật/tắt kiểu đặt dấu thanh hiện đại.                          | Bật             |
+| **Allow Type With More Freedom**                                          | Bật/tắt bỏ dấu tự do.                                         | Bật             |
+| **Allow dd To Produce đ When Auto Restore Keys With Invalid Words Is On** | Bật/tắt cho phép "dd" tạo "đ" khi dùng _Auto non-VN restore_. | Bật             |
+| **Fix Uinput Mode With Ack**                                              | Khuyên dùng cho ứng dụng Chromium (Chrome, Brave, Edge, ...). | Tắt             |
+| **Use Lotus Status Icons**                                                | Dùng icon Lotus thay vì icon V/E mặc định.                    | Tắt             |
 
 </details>
 
