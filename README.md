@@ -31,6 +31,7 @@
     <a href="#contributors-">
       <img src="https://img.shields.io/badge/all_contributors-5-orange.svg?style=flat-square" alt="All Contributors">
     </a>
+    <a href="https://deepwiki.com/LotusInputMethod/fcitx5-lotus"><img src="https://deepwiki.com/badge.svg" alt="Ask DeepWiki"></a>
   </p>
 
 <p align="center">
@@ -503,15 +504,15 @@ Tại đây bạn có thể tùy chỉnh chi tiết:
 - **Keymap tùy chỉnh:** Nhấn bánh răng dòng _Custom Keymap_ để tự định nghĩa phím. Chọn kiểu gõ **Custom** để áp dụng.
 - **Phím tắt Menu:** Đổi phím nóng mở menu chế độ gõ (mặc định là `` ` ``) tại dòng _Mode menu hotkey_.
 
-| Tùy chọn | Mô tả | Mặc định |
-| :---------------------- | :------------------------------------------------------ | :------- |
-| **Mode** | Chọn chế độ gõ. | Uinput (Smooth) |
-| **Input Method** | Chọn kiểu gõ. | Telex |
-| **Use oà, uý (Instead Of òa, úy)** | Bật/tắt kiểu đặt dấu thanh hiện đại. | Bật |
-| **Allow Type With More Freedom** | Bật/tắt bỏ dấu tự do. | Bật |
-| **Allow dd To Produce đ When Auto Restore Keys With Invalid Words Is On** | Bật/tắt cho phép "dd" tạo "đ" khi dùng _Auto non-VN restore_. | Bật |
-| **Fix Uinput Mode With Ack** | Khuyên dùng cho ứng dụng Chromium (Chrome, Brave, Edge, ...). | Tắt |
-| **Use Lotus Status Icons** | Dùng icon Lotus thay vì icon V/E mặc định. | Tắt |
+| Tùy chọn                                                                  | Mô tả                                                         | Mặc định        |
+| :------------------------------------------------------------------------ | :------------------------------------------------------------ | :-------------- |
+| **Mode**                                                                  | Chọn chế độ gõ.                                               | Uinput (Smooth) |
+| **Input Method**                                                          | Chọn kiểu gõ.                                                 | Telex           |
+| **Use oà, uý (Instead Of òa, úy)**                                        | Bật/tắt kiểu đặt dấu thanh hiện đại.                          | Bật             |
+| **Allow Type With More Freedom**                                          | Bật/tắt bỏ dấu tự do.                                         | Bật             |
+| **Allow dd To Produce đ When Auto Restore Keys With Invalid Words Is On** | Bật/tắt cho phép "dd" tạo "đ" khi dùng _Auto non-VN restore_. | Bật             |
+| **Fix Uinput Mode With Ack**                                              | Khuyên dùng cho ứng dụng Chromium (Chrome, Brave, Edge, ...). | Tắt             |
+| **Use Lotus Status Icons**                                                | Dùng icon Lotus thay vì icon V/E mặc định.                    | Tắt             |
 
 </details>
 

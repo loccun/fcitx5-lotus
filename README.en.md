@@ -31,6 +31,7 @@
     <a href="#contributors-">
       <img src="https://img.shields.io/badge/all_contributors-5-orange.svg?style=flat-square" alt="All Contributors">
     </a>
+    <a href="https://deepwiki.com/LotusInputMethod/fcitx5-lotus"><img src="https://deepwiki.com/badge.svg" alt="Ask DeepWiki"></a>
   </p>
 
   <p align="center">
@@ -504,15 +505,15 @@ Advanced options available here:
 - **Custom Keymap:** Click the gear icon on the _Custom Keymap_ row to customize your keymap. Select **Custom** input method to apply.
 - **Menu Hotkey:** Change the key to open the mode menu (default is `` ` ``) at _Mode menu hotkey_.
 
-| Option | Description | Default |
-| :---------------------- | :----------------------------------------------------------------------------------------------------------------------------- | :-------------- |
-| **Mode** | Select typing mode. | Uinput (Smooth) |
-| **Input Method** | Select input method. | Telex |
-| **Use oà, uý (Instead Of òa, úy)** | Enable/disable modern tone mark placement style. | On |
-| **Allow Type With More Freedom** | Enable/disable free tone marking. | On |
-| **Allow dd To Produce đ When Auto Restore Keys With Invalid Words Is On** | Enable/disable allowing "dd" to produce "đ" when _Auto non-VN restore_ is On | On |
-| **Fix Uinput Mode With Ack** | Recommended when using Chromium-based applications (Chrome, Brave, Edge, ...). | Off |
-| **Use Lotus Status Icons** | Enable/disable using Lotus icons instead of the default V/E icons. | Off |
+| Option                                                                    | Description                                                                    | Default         |
+| :------------------------------------------------------------------------ | :----------------------------------------------------------------------------- | :-------------- |
+| **Mode**                                                                  | Select typing mode.                                                            | Uinput (Smooth) |
+| **Input Method**                                                          | Select input method.                                                           | Telex           |
+| **Use oà, uý (Instead Of òa, úy)**                                        | Enable/disable modern tone mark placement style.                               | On              |
+| **Allow Type With More Freedom**                                          | Enable/disable free tone marking.                                              | On              |
+| **Allow dd To Produce đ When Auto Restore Keys With Invalid Words Is On** | Enable/disable allowing "dd" to produce "đ" when _Auto non-VN restore_ is On   | On              |
+| **Fix Uinput Mode With Ack**                                              | Recommended when using Chromium-based applications (Chrome, Brave, Edge, ...). | Off             |
+| **Use Lotus Status Icons**                                                | Enable/disable using Lotus icons instead of the default V/E icons.             | Off             |
 
 </details>
 
