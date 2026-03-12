@@ -117,7 +117,7 @@ sudo apt update && sudo apt install fcitx5-lotus
 
 ```bash
 # Auto-detect codename and install
-CODENAME=$(grep '^VERSION_CODENAME=' /etc/os-release | cut -d'=' -f2)
+CODENAME=$(grep '^UBUNTU_CODENAME=' /etc/os-release | cut -d'=' -f2)
 sudo mkdir -p /etc/apt/keyrings
 curl -fsSL https://fcitx5-lotus.pages.dev/pubkey.gpg | sudo gpg --dearmor -o /etc/apt/keyrings/fcitx5-lotus.gpg
 echo "deb [signed-by=/etc/apt/keyrings/fcitx5-lotus.gpg] https://fcitx5-lotus.pages.dev/apt/$CODENAME $CODENAME main" | sudo tee /etc/apt/sources.list.d/fcitx5-lotus.list
