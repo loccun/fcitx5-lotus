@@ -226,6 +226,22 @@ class AddAppDialog(QDialog):
                     except (PermissionError, FileNotFoundError):
                         continue # Probably a kernel thread
                     
+                    # Clean process names for NixOS
+                    if name.startswith('.'):
+                        exe_base = os.path.basename(exe)
+                        if exe_base.startswith('.') and exe_base.endswith('-wrapped'):
+                            name = exe_base[1:-8]
+                        elif name.startswith('.' + exe_base) or name == ('.' + exe_base)[:15]:
+                            name = exe_base
+                        else:
+                            clean = name[1:]
+                            for s in ['-wrapped', '-wrappe', '-wrapp', '-wrap', '-wra', '-wr', '-w']:
+                                if clean.endswith(s):
+                                    clean = clean[:-len(s)]
+                                    break
+                            if clean:
+                                name = clean
+
                     # Exclude common system/background paths
                     exclude_paths = ["/usr/lib", "/usr/libexec", "/lib", "/systemd", "/usr/sbin"]
                     if any(exe.startswith(p) for p in exclude_paths):
@@ -493,6 +509,13 @@ class ModeManagerPage(QWidget):
             os.path.expanduser("~/.local/share/flatpak/exports/share/applications"),
             "/var/lib/snapd/desktop/applications",
         ]
+
+        xdg_data_dirs = os.environ.get("XDG_DATA_DIRS", "").split(":")
+        for directory in xdg_data_dirs:
+            if directory:
+                xdg_applications_path = os.path.join(directory, "applications")
+                if xdg_applications_path not in search_paths:
+                    search_paths.append(xdg_applications_path)
         
         # Priority 1: Direct binary names from Exec line
         # Priority 2: Desktop filenames (e.g. com.discordapp.Discord -> Discord)
