@@ -320,7 +320,7 @@ namespace fcitx {
         FCITX_UNUSED(entry);
         auto*                    ic        = event.inputContext();
         const bool               surrvalid = ic->surroundingText().isValid();
-        const bool               is_dbus   = ic->frontend() && strcmp(ic->frontend(), "dbus") == 0;
+        const bool               is_dbus   = (ic->frontend() != nullptr) && strcmp(ic->frontend(), "dbus") == 0;
         static std::atomic<bool> mouseThreadStarted{false};
         if (!mouseThreadStarted.exchange(true))
             startMouseReset();
@@ -577,7 +577,7 @@ namespace fcitx {
         auto*      ic              = event.inputContext();
         auto*      state           = ic->propertyFor(&factory_);
         const bool surrvalid       = ic->surroundingText().isValid();
-        const bool is_dbus         = ic->frontend() && strcmp(ic->frontend(), "dbus") == 0;
+        const bool is_dbus         = (ic->frontend() != nullptr) && strcmp(ic->frontend(), "dbus") == 0;
         state->lastDeactivateTime_ = now_ms();
         if (realMode == LotusMode::Preedit && event.type() != EventType::InputContextFocusOut) {
             state->commitBuffer();

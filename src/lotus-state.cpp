@@ -244,7 +244,7 @@ namespace fcitx {
 
     void LotusState::handleEmojiMode(KeyEvent& keyEvent) {
         const KeySym currentSym      = keyEvent.rawKey().sym();
-        bool         isCtrlBackspace = isBackspace(currentSym) && (keyEvent.rawKey().states() & KeyState::Ctrl);
+        bool         isCtrlBackspace = isBackspace(currentSym) && ((keyEvent.rawKey().states() & KeyState::Ctrl) != 0U);
 
         if (keyEvent.key().hasModifier() && !isCtrlBackspace) {
             keyEvent.forward();
@@ -463,14 +463,14 @@ namespace fcitx {
             std::this_thread::sleep_for(std::chrono::milliseconds(sleepTime));
             // Validate surr cursor pos should match realtextLen after all BS applied
             const auto& surr = ic_->surroundingText();
-            if (surr.isValid() && static_cast<unsigned int>(surr.cursor()) == realtextLen) {
+            if (surr.isValid() && surr.cursor() == realtextLen) {
                 LOTUS_INFO("Skip retry");
             } else {
                 // Retry x3 (2 ms each), khi can (chromium,electron,...)
                 for (int retry = 0; retry < 3; ++retry) {
                     std::this_thread::sleep_for(std::chrono::milliseconds(2));
                     const auto& surr2 = ic_->surroundingText();
-                    if (surr2.isValid() && static_cast<unsigned int>(surr2.cursor()) == realtextLen) {
+                    if (surr2.isValid() && surr2.cursor() == realtextLen) {
                         break;
                     }
                 }
