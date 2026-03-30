@@ -30,6 +30,7 @@ from PySide6.QtGui import QIcon
 from i18n import _
 from ui.pages.dynamic_settings import CardWidget
 from core.dbus_handler import LotusDBusHandler
+from core.recommendations import get_recommendation, MODE_DEFAULT as REC_MODE_DEFAULT
 
 # Mode constants as defined in C++ LotusEngine
 MODE_OFF = 0
@@ -68,6 +69,17 @@ class ModeCard(QFrame):
         self._setup_ui()
         self.update_style()
 
+    def set_recommendation(self, status):
+        """Sets the recommendation status for this card."""
+        self.rec_status = status
+        self.update_style()
+        if status == "good":
+            self.setToolTip(_("Recommended for this application"))
+        elif status == "bad":
+            self.setToolTip(_("Poor compatibility with this application"))
+        else:
+            self.setToolTip("")
+
     def _setup_ui(self):
         layout = QVBoxLayout(self)
         layout.setContentsMargins(10, 15, 10, 15)
@@ -83,25 +95,59 @@ class ModeCard(QFrame):
         layout.addWidget(title_label)
 
     def update_style(self):
+        status = getattr(self, "rec_status", None)
+        
+        # Color constants
+        COLOR_GOOD = "#2ecc71" # Green
+        COLOR_BAD = "#e74c3c"  # Red
+        
         if self.selected:
+            # Selected cards have a thicker border (2.5px)
+            border_color = "palette(highlight)"
+            if status == "good": border_color = COLOR_GOOD
+            elif status == "bad": border_color = COLOR_BAD
+            
             self.setStyleSheet(
-                """
-                QFrame#ModeCard {
-                    border: 1.5px solid palette(highlight);
+                f"""
+                QFrame#ModeCard {{
+                    border: 2px solid {border_color};
                     background: palette(highlight);
-                    border-radius: 8px;
-                }
-                QLabel { color: palette(highlighted-text); }
+                    border-radius: 10px;
+                    padding: 0px;
+                }}
+                QLabel {{ color: palette(highlighted-text); font-weight: bold; }}
             """
             )
         else:
+            # Unselected cards have a thinner border (1px) 
+            # We add 1px padding to keep the total size consistent with selected cards
+            border_color = "palette(mid)"
+            border_width = "1px"
+            padding = "1px"
+            
+            if status == "good":
+                border_color = COLOR_GOOD
+                border_width = "2px"
+                padding = "0px"
+            elif status == "bad":
+                border_color = COLOR_BAD
+                border_width = "2px"
+                padding = "0px"
+            
             self.setStyleSheet(
-                """
-                QFrame#ModeCard {
-                    border: 1.5px solid palette(mid);
+                f"""
+                QFrame#ModeCard {{
+                    border: {border_width} solid {border_color};
                     background: palette(alternate-base);
-                    border-radius: 8px;
-                }
+                    border-radius: 10px;
+                    padding: {padding};
+                }}
+                QFrame#ModeCard:hover {{
+                    border: 2px solid palette(highlight);
+                    padding: 0px;
+                    background: palette(base);
+                }}
+                QLabel#ModeCardTitle {{ color: {border_color if status else "palette(window-text)"}; }}
             """
             )
 
@@ -403,8 +449,9 @@ class ModeManagerPage(QWidget):
         global_layout.addWidget(QLabel(_("Global Default Mode:")))
         self.combo_global_mode = QComboBox()
         global_modes = [
-            MODE_OFF, MODE_SMOOTH, MODE_SLOW, MODE_HARDCORE,
-            MODE_SURROUNDING, MODE_PREEDIT, MODE_EMOJI
+            MODE_SMOOTH, MODE_SLOW, MODE_HARDCORE,
+            MODE_SURROUNDING, MODE_PREEDIT, 
+            MODE_OFF, MODE_EMOJI
         ]
         for m in global_modes:
             self.combo_global_mode.addItem(_(MODE_INFO[m]["title"]), MODE_INFO[m]["title"])
@@ -436,10 +483,10 @@ class ModeManagerPage(QWidget):
         self.mode_cards = {}
         
         grid_modes = [
-            MODE_DEFAULT, MODE_OFF,
             MODE_SMOOTH, MODE_SLOW,
             MODE_HARDCORE, MODE_SURROUNDING,
-            MODE_PREEDIT, MODE_EMOJI
+            MODE_PREEDIT, MODE_DEFAULT,
+            MODE_OFF, MODE_EMOJI
         ]
         for i, m in enumerate(grid_modes):
             card = ModeCard(m)
@@ -633,8 +680,24 @@ class ModeManagerPage(QWidget):
         self._notify_changed()
 
     def _update_mode_cards(self):
+        # Resolve global default mode if needed for recommendation
+        global_mode_val = MODE_SMOOTH
+        if self.combo_global_mode.currentIndex() >= 0:
+            global_mode_str = self.combo_global_mode.currentData()
+            # Crude string to int conversion if needed, but get_recommendation handles int
+            # Actually, global_mode_val is just for when the app uses MODE_DEFAULT
+            pass
+
         for m, card in self.mode_cards.items():
             card.selected = (m == self.current_app_mode)
+            
+            # Show recommendations only for the currently selected app
+            if self.selected_app:
+                emoji = get_recommendation(self.selected_app, m)
+                card.set_recommendation(emoji)
+            else:
+                card.set_recommendation(None)
+                
             card.update_style()
 
     def _on_add_app(self):
