@@ -43,7 +43,7 @@ APP_RECOMMENDATIONS = {
     }
 }
 
-def get_recommendation(app_name: str, mode: int) -> str:
+def get_recommendation(app_name: str, mode: int) -> str | None:
     """
     Looks up a recommendation status for a given app and mode.
     Returns: "good", "bad", or None
@@ -54,7 +54,7 @@ def get_recommendation(app_name: str, mode: int) -> str:
     app_lower = app_name.lower()
     
     for category, data in APP_RECOMMENDATIONS.items():
-        if re.search(data["pattern"], app_lower):
+        if data["pattern"].search(app_lower):
             return data["recommendations"].get(mode)
             
     return None

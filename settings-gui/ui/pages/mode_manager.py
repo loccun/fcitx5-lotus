@@ -693,8 +693,8 @@ class ModeManagerPage(QWidget):
             
             # Show recommendations only for the currently selected app
             if self.selected_app:
-                emoji = get_recommendation(self.selected_app, m)
-                card.set_recommendation(emoji)
+                recommendation_status = get_recommendation(self.selected_app, m)
+                card.set_recommendation(recommendation_status)
             else:
                 card.set_recommendation(None)
                 
