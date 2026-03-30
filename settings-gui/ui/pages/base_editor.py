@@ -145,3 +145,13 @@ class BaseEditorPage(QWidget):
 
         self.update_button_states()
         self._on_item_changed()
+
+    def _find_row_by_key(self, key: str) -> int | None:
+        """Finds row index for a given key in the first column. Returns None if not found."""
+        if not self.table:
+            return None
+        for r in range(self.table.rowCount()):
+            item = self.table.item(r, 0)
+            if item and item.text() == key:
+                return r
+        return None

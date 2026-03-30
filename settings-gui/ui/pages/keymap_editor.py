@@ -449,13 +449,6 @@ class KeymapEditorPage(BaseEditorPage):
         self.update_button_states()
         self._on_item_changed()
 
-    def _find_row_by_key(self, key: str) -> int | None:
-        """Finds row index for a given key. Returns None if not found."""
-        for r in range(self.table.rowCount()):
-            item = self.table.item(r, 0)
-            if item and item.text() == key:
-                return r
-        return None
 
     def _update_add_button_icon(self, *_args):
         """Changes the Add button icon to Update if key exists."""

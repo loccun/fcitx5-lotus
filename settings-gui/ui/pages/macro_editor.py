@@ -323,13 +323,6 @@ class MacroEditorPage(BaseEditorPage):
         self.dbus.set_sub_config_list("lotus-macro", "Macro", data)
         self.initial_state = self._get_current_state()
 
-    def _find_row_by_key(self, key: str) -> int | None:
-        """Finds row index for a given key. Returns None if not found."""
-        for r in range(self.table.rowCount()):
-            item = self.table.item(r, 0)
-            if item and item.text() == key:
-                return r
-        return None
 
     def upsert_row(self, key: str, value: str, sort: bool = True):
         # Update existing
