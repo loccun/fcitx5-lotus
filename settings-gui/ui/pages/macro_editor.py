@@ -349,7 +349,6 @@ class MacroEditorPage(BaseEditorPage):
         self.table.setItem(row, 0, QTableWidgetItem(key))
         self.table.setItem(row, 1, QTableWidgetItem(value))
         self._apply_row_highlight(row, key)
-        self.on_search_changed()
         if sort:
             self.on_search_changed()  # Re-apply filter
         self.update_button_states()

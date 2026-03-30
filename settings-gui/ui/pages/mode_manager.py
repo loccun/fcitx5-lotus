@@ -30,17 +30,17 @@ from PySide6.QtGui import QIcon
 from i18n import _
 from ui.pages.dynamic_settings import CardWidget
 from core.dbus_handler import LotusDBusHandler
-from core.recommendations import get_recommendation, MODE_DEFAULT as REC_MODE_DEFAULT
-
-# Mode constants as defined in C++ LotusEngine
-MODE_OFF = 0
-MODE_SMOOTH = 1
-MODE_SLOW = 2
-MODE_HARDCORE = 3
-MODE_SURROUNDING = 4
-MODE_PREEDIT = 5
-MODE_EMOJI = 6
-MODE_DEFAULT = -1  # UI special value for "Use Global Default"
+from core.recommendations import (
+    get_recommendation,
+    MODE_OFF,
+    MODE_SMOOTH,
+    MODE_SLOW,
+    MODE_HARDCORE,
+    MODE_SURROUNDING,
+    MODE_PREEDIT,
+    MODE_EMOJI,
+    MODE_DEFAULT,
+)
 
 MODE_INFO = {
     MODE_DEFAULT: {"title": "Default", "icon": "preferences-system"},
@@ -64,6 +64,7 @@ class ModeCard(QFrame):
         super().__init__(parent)
         self.mode = mode
         self.selected = selected
+        self.rec_status = None
         self.setObjectName("ModeCard")
         self.setCursor(Qt.PointingHandCursor)
         self._setup_ui()
@@ -95,7 +96,7 @@ class ModeCard(QFrame):
         layout.addWidget(title_label)
 
     def update_style(self):
-        status = getattr(self, "rec_status", None)
+        status = self.rec_status
         
         # Color constants
         COLOR_GOOD = "#2ecc71" # Green
@@ -681,24 +682,26 @@ class ModeManagerPage(QWidget):
 
     def _update_mode_cards(self):
         # Resolve global default mode if needed for recommendation
-        global_mode_val = MODE_SMOOTH
+        global_mode = MODE_SMOOTH
         if self.combo_global_mode.currentIndex() >= 0:
             global_mode_str = self.combo_global_mode.currentData()
-            # Crude string to int conversion if needed, but get_recommendation handles int
-            # Actually, global_mode_val is just for when the app uses MODE_DEFAULT
-            pass
+            # Map title back to mode constant
+            for m, info in MODE_INFO.items():
+                if info["title"] == global_mode_str:
+                    global_mode = m
+                    break
 
         for m, card in self.mode_cards.items():
             card.selected = (m == self.current_app_mode)
             
             # Show recommendations only for the currently selected app
             if self.selected_app:
-                recommendation_status = get_recommendation(self.selected_app, m)
+                # If it's the "Default" card, show recommendation for the global default mode
+                lookup_mode = global_mode if m == MODE_DEFAULT else m
+                recommendation_status = get_recommendation(self.selected_app, lookup_mode)
                 card.set_recommendation(recommendation_status)
             else:
                 card.set_recommendation(None)
-                
-            card.update_style()
 
     def _on_add_app(self):
         dialog = AddAppDialog(self._icon_cache, list(self.app_rules.keys()), self)

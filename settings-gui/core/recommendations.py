@@ -8,7 +8,7 @@ This module helps users choose the best input mode for specific applications.
 
 import re
 
-# Mode constants (should match mode_manager.py and C++ LotusEngine)
+# Mode constants (source of truth for GUI)
 MODE_OFF = 0
 MODE_SMOOTH = 1
 MODE_SLOW = 2
@@ -22,7 +22,7 @@ MODE_DEFAULT = -1
 # Status values: "good" (Recommended), "bad" (Poor compatibility)
 APP_RECOMMENDATIONS = {
     "Firefox-based": {
-        "pattern": r"firefox|librewolf|waterfox|floorp|zen",
+        "pattern": re.compile(r"firefox|librewolf|waterfox|floorp|zen", re.IGNORECASE),
         "recommendations": {
             MODE_SMOOTH: "good",
             MODE_SLOW: "good",
@@ -32,7 +32,7 @@ APP_RECOMMENDATIONS = {
         }
     },
     "Chromium-based": {
-        "pattern": r"chrome|chromium|brave|vivaldi|opera|edge",
+        "pattern": re.compile(r"chrome|chromium|brave|vivaldi|opera|edge", re.IGNORECASE),
         "recommendations": {
             MODE_SMOOTH: "good",
             MODE_SLOW: "good",
@@ -53,7 +53,7 @@ def get_recommendation(app_name: str, mode: int) -> str | None:
         
     app_lower = app_name.lower()
     
-    for category, data in APP_RECOMMENDATIONS.items():
+    for _, data in APP_RECOMMENDATIONS.items():
         if data["pattern"].search(app_lower):
             return data["recommendations"].get(mode)
             
