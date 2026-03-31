@@ -107,6 +107,7 @@ namespace fcitx {
         bool                    isPrevPunctuation_  = false;
         int64_t                 lastDeactivateTime_ = 0;
         bool                    wa_chromium_flag    = false;
+        bool                    enableVisualOverlay_ = false;
 
         /**
          * @brief Connects to the uinput server.
@@ -217,6 +218,12 @@ namespace fcitx {
          * replacement completes.
          */
         void replayBufferedKeys();
+
+        /**
+         * @brief Broadcasts text to the visual overlay.
+         * @param text The text to display.
+         */
+        void broadcastOverlay(const std::string& text);
     };
 
 } // namespace fcitx

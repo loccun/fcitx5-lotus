@@ -23,6 +23,7 @@ import (
 			bool w2u;
 			const char *timeFormat;
 			const char *dateFormat;
+			bool enableVisualOverlay;
 		} FcitxBambooEngineOption;
 	*/
 	"C"
@@ -125,6 +126,7 @@ func EngineSetOption(engine uintptr, option *C.FcitxBambooEngineOption) {
 	bambooEngine.preeditor.SetFlag(flags)
 	bambooEngine.timeFormat = C.GoString(option.timeFormat)
 	bambooEngine.dateFormat = C.GoString(option.dateFormat)
+	bambooEngine.enableVisualOverlay = bool(option.enableVisualOverlay)
 }
 
 //export NewEngine
@@ -155,6 +157,7 @@ func NewEngine(name *C.cchar, dictHandle uintptr, tableHandle uintptr) uintptr {
 		commitText:              "",
 		shouldRestoreKeyStrokes: false,
 		outputCharset:           "Unicode",
+		enableVisualOverlay:     false,
 		timeFormat:              "%H:%M",
 		dateFormat:              "%d/%m/%Y",
 	}
@@ -198,6 +201,7 @@ func NewCustomEngine(definition **C.char, dictHandle uintptr, tableHandle uintpt
 		commitText:              "",
 		shouldRestoreKeyStrokes: false,
 		outputCharset:           "Unicode",
+		enableVisualOverlay:     false,
 		timeFormat:              "%H:%M",
 		dateFormat:              "%d/%m/%Y",
 	}

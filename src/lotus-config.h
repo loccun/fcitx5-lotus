@@ -234,6 +234,7 @@ namespace fcitx {
         OptionWithAnnotation<std::string, DateFormatAnnotation> dateFormat{this, "DateFormat", _("Date Format ($DATE in macro)"), "%d/%m/%Y", {}, {}, DateFormatAnnotation()};
         SubConfigOption                                         macroEditor{this, "MacroEditor", _("Macro"), "fcitx://config/addon/lotus/lotus-macro"};
         SubConfigOption                                         customKeymap{this, "CustomKeymap", _("Custom Keymap"), "fcitx://config/addon/lotus/custom_keymap"};
+        Option<bool>                                            enableVisualOverlay{this, "EnableVisualOverlay", _("Enable Visual Key Overlay (Accessibility)"), false};
         SubConfigOption appRules{this, "AppRules", _("App Rules"), "fcitx://config/addon/lotus/app_rules"}; KeyListOption modeMenuKey{
             this, "ModeMenuKey", _("Mode Menu Hotkey"), {Key("grave")}, KeyListConstrain({KeyConstrainFlag::AllowModifierLess, KeyConstrainFlag::AllowModifierOnly})};);
 

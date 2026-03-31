@@ -74,6 +74,7 @@ namespace fcitx {
             .w2u                 = *engine_->config().w2u,
             .timeFormat          = engine_->config().timeFormat->data(),
             .dateFormat          = engine_->config().dateFormat->data(),
+            .enableVisualOverlay = enableVisualOverlay_,
         };
 
         EngineSetOption(lotusEngine_.handle(), &option);
@@ -208,6 +209,11 @@ namespace fcitx {
                 ic_->inputPanel().setClientPreedit(text);
             else
                 ic_->inputPanel().setPreedit(text);
+            if (enableVisualOverlay_)
+                broadcastOverlay(std::string(view));
+        } else {
+            if (enableVisualOverlay_)
+                broadcastOverlay("");
         }
         ic_->updatePreedit();
         ic_->updateUserInterface(UserInterfaceComponent::InputPanel);
@@ -664,6 +670,8 @@ namespace fcitx {
                     if (wa_chromium_flag || wasAutoCapitalized || addedPart != keyUtf8) {
                         ic_->commitString(addedPart);
                         LOTUS_INFO("Commit: " + addedPart);
+                        if (enableVisualOverlay_)
+                            broadcastOverlay("");
                         if (!wa_chromium_flag) {
                             keyEvent.filterAndAccept();
                             isCommit = true;
@@ -693,6 +701,8 @@ namespace fcitx {
                 oldPreBuffer_ = preeditStr;
             }
         }
+        if (enableVisualOverlay_)
+            broadcastOverlay(preeditStr);
     }
 
     void LotusState::handleSurroundingText(KeyEvent& keyEvent, KeySym currentSym) {
@@ -771,6 +781,8 @@ namespace fcitx {
             if (!processed) {
                 keyEvent.forward();
                 ResetEngine(lotusEngine_.handle());
+                if (enableVisualOverlay_)
+                    broadcastOverlay("");
                 return;
             }
 
@@ -790,6 +802,8 @@ namespace fcitx {
             if (deletedPart.empty() && addedPart == keyEvent.key().toString()) {
                 ResetEngine(lotusEngine_.handle());
                 keyEvent.forward();
+                if (enableVisualOverlay_)
+                    broadcastOverlay("");
                 return;
             }
 
@@ -807,11 +821,14 @@ namespace fcitx {
 
                 ResetEngine(lotusEngine_.handle());
                 keyEvent.filterAndAccept();
+                if (enableVisualOverlay_)
+                    broadcastOverlay("");
                 return;
             }
 
             ResetEngine(lotusEngine_.handle());
             keyEvent.filterAndAccept();
+            broadcastOverlay("");
             return;
         }
     }
@@ -832,6 +849,8 @@ namespace fcitx {
             if (!out.empty()) {
                 LOTUS_INFO("Commit: " + out);
                 ic->commitString(out);
+                if (enableVisualOverlay_)
+                    broadcastOverlay("");
             }
 
             ResetEngine(lotusEngine_.handle());
@@ -847,12 +866,16 @@ namespace fcitx {
                 ic_->deleteSurroundingText(-1, 1);
                 ic_->commitString(". ");
                 LOTUS_INFO("Commit: . ");
+                if (enableVisualOverlay_)
+                    broadcastOverlay("");
 
                 break;
             }
             default: { // Uinput, Smooth, Preedit, etc.
                 performReplacement(" ", ". ");
                 LOTUS_INFO("Commit: . ");
+                if (enableVisualOverlay_)
+                    broadcastOverlay("");
                 break;
             }
         }
@@ -1087,6 +1110,8 @@ namespace fcitx {
                 break;
             }
         }
+        if (enableVisualOverlay_)
+            broadcastOverlay("");
     }
 
     void LotusState::clearAllBuffers() {
@@ -1108,6 +1133,8 @@ namespace fcitx {
         isPrevPunctuation_ = false;
         if (lotusEngine_)
             ResetEngine(lotusEngine_.handle());
+        if (enableVisualOverlay_)
+            broadcastOverlay("");
     }
 
     bool LotusState::isEmptyHistory() const {
@@ -1205,5 +1232,35 @@ namespace fcitx {
             }
         }
         LOTUS_INFO("Replay buffered keys done");
+    }
+
+    void LotusState::broadcastOverlay(const std::string& text) {
+        static int  overlay_fd = -1;
+        static bool last_empty = true;
+
+        if (text.empty() && last_empty)
+            return;
+
+        if (overlay_fd < 0) {
+            overlay_fd = socket(AF_UNIX, SOCK_STREAM | SOCK_NONBLOCK, 0);
+            if (overlay_fd >= 0) {
+                struct sockaddr_un addr {};
+                addr.sun_family = AF_UNIX;
+                const char* path = "/tmp/lotus-overlay-proto.sock";
+                strncpy(addr.sun_path, path, sizeof(addr.sun_path) - 1);
+                if (connect(overlay_fd, (struct sockaddr*)&addr, sizeof(addr)) != 0) {
+                    close(overlay_fd);
+                    overlay_fd = -1;
+                }
+            }
+        }
+
+        if (overlay_fd >= 0) {
+            if (send(overlay_fd, text.c_str(), text.size(), MSG_NOSIGNAL) < 0) {
+                close(overlay_fd);
+                overlay_fd = -1;
+            }
+        }
+        last_empty = text.empty();
     }
 } // namespace fcitx

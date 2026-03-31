@@ -30,6 +30,7 @@ type FcitxBambooEngine struct {
 	shouldRestoreKeyStrokes bool
 	outputCharset           string
 	w2u                     bool
+	enableVisualOverlay     bool
 	timeFormat              string
 	dateFormat              string
 }
